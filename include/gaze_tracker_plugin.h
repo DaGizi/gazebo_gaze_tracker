@@ -25,11 +25,11 @@
 
 namespace gazebo
 {
-    class GazeTrackerClient: public WorldPlugin
+    class GazeTrackerPlugin: public SystemPlugin
     {
-    public: ~GazeTrackerClient();
+    public: ~GazeTrackerPlugin();
 
-    public: void Load(physics::WorldPtr _parent, sdf::ElementPtr /*_sdf*/);
+    public: void Load(int /*_argc*/, char ** /*_argv*/);
 
     public: void Update();
 

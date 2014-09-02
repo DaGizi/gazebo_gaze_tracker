@@ -4,25 +4,25 @@ using namespace gazebo;
 using namespace std;
 
 
-GazeTrackerClient::~GazeTrackerClient()
+GazeTrackerPlugin::~GazeTrackerPlugin()
 {
     close(this->sd);
     this->connection.reset();
 }
 
-void GazeTrackerClient::Load(physics::WorldPtr _parent, sdf::ElementPtr /*_sdf*/)
+void GazeTrackerPlugin::Load(int /*_argc*/, char ** /*_argv*/)
 {
     this->ConnectToServer();
     this->connection = event::Events::ConnectWorldUpdateBegin(
-          boost::bind(&GazeTrackerClient::Update, this));
+          boost::bind(&GazeTrackerPlugin::Update, this));
 }
 
-void GazeTrackerClient::Update()
+void GazeTrackerPlugin::Update()
 {
     this->ListenToServer();
 }
 
-void GazeTrackerClient::ConnectToServer()
+void GazeTrackerPlugin::ConnectToServer()
 {
     if((this->sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
@@ -61,7 +61,7 @@ void GazeTrackerClient::ConnectToServer()
     else printf("Connection established...\n");
 }
 
-void GazeTrackerClient::ListenToServer()
+void GazeTrackerPlugin::ListenToServer()
 {
     this->rc = read(this->sd, &buffer[0], BufferLength);
     if(this->rc < 0)
@@ -78,4 +78,4 @@ void GazeTrackerClient::ListenToServer()
     printf("Echoed data from the server: %s\n", buffer);
 }
 
-GZ_REGISTER_WORLD_PLUGIN(GazeTrackerClient)
+GZ_REGISTER_SYSTEM_PLUGIN(GazeTrackerPlugin)
