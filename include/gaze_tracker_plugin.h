@@ -5,8 +5,6 @@
 #include <gazebo/gui/GuiIface.hh>
 #include <gazebo/rendering/rendering.hh>
 #include <gazebo/gazebo.hh>
-#include <gazebo/gui/GuiEvents.hh>
-#include <gazebo/physics/physics.hh>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +17,9 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <boost/tokenizer.hpp>
+#include <boost/thread.hpp>
+
 #define BufferLength 15
 #define SERVER "192.168.100.72"
 #define SERVPORT 5150
@@ -27,6 +28,8 @@ namespace gazebo
 {
     class GazeTrackerPlugin: public SystemPlugin
     {
+    public:  GazeTrackerPlugin();
+
     public: ~GazeTrackerPlugin();
 
     public: void Load(int /*_argc*/, char ** /*_argv*/);
@@ -35,26 +38,33 @@ namespace gazebo
 
     public: void ConnectToServer();
 
-    public: void ListenToServer();
+    public: std::string ListenToServer();
+
+    private: void Listen();
 
     public: event::ConnectionPtr connection;
 
     public: rendering::UserCameraPtr mUserCam;
 
-    public: int x, y;
-
     public: math::Vector2i coords;
 
-    public: std::vector<rendering::VisualPtr> visualVect;
+    private: int gaze_coords[];
 
     public: rendering::VisualPtr visual_ptr;
 
-    public: int sd, rc, length = sizeof(int);
-    public: struct sockaddr_in serveraddr;
-    public: char buffer[BufferLength];
-    public: char server[255];
-    public: int totalcnt = 0;
-    public: struct hostent *hostp;
+    private: int sd, rc, length;
+
+    private: struct sockaddr_in serveraddr;
+
+    private: char buffer[];
+
+    private: char server[];
+
+    private: int totalcnt;
+
+    private: struct hostent *hostp;
+
+    private: boost::thread *clientThread;
     };
 }
 #endif // GAZE_TRACKER_CLIENT_H

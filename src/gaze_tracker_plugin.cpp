@@ -3,6 +3,16 @@
 using namespace gazebo;
 using namespace std;
 
+GazeTrackerPlugin::GazeTrackerPlugin()
+{
+    this->gaze_coords[2];
+    this->sd = sizeof(int);
+    this->rc = sizeof(int);
+    this->length = sizeof(int);
+    this->buffer[BufferLength];
+    this->server[255];
+    this->totalcnt = 0;
+}
 
 GazeTrackerPlugin::~GazeTrackerPlugin()
 {
@@ -10,16 +20,50 @@ GazeTrackerPlugin::~GazeTrackerPlugin()
     this->connection.reset();
 }
 
+
 void GazeTrackerPlugin::Load(int /*_argc*/, char ** /*_argv*/)
 {
+    cout << "Load" << endl;
     this->ConnectToServer();
-    this->connection = event::Events::ConnectWorldUpdateBegin(
+
+    this->connection = event::Events::ConnectPreRender(
           boost::bind(&GazeTrackerPlugin::Update, this));
+    this->clientThread = new boost::thread(boost::bind(&GazeTrackerPlugin::Listen,this));
 }
 
 void GazeTrackerPlugin::Update()
 {
-    this->ListenToServer();
+    this->coords.x = this->gaze_coords[0];
+    this->coords.y = this->gaze_coords[1];
+    this->mUserCam = gui::get_active_camera();
+    if((this->visual_ptr = this->mUserCam->GetVisual(this->coords)) != NULL)
+    {
+        cout << "Got visual : " << this->visual_ptr->GetName() << endl;
+    }
+    else
+    {
+        cout << "No visual..." << endl;
+    }
+}
+
+void GazeTrackerPlugin::Listen()
+{
+    boost::posix_time::millisec workTime(1);
+    while(1)
+    {
+        string server_buffer = GazeTrackerPlugin::ListenToServer();
+        int i = 0;
+        boost::char_separator<char> sep(",");
+        boost::tokenizer< boost::char_separator<char> > tok(server_buffer, sep);
+        for(boost::tokenizer< boost::char_separator<char> >::iterator tok_iter = tok.begin(); tok_iter != tok.end(); tok_iter++)
+        {
+            //TODO to fix
+            std::string str = *tok_iter;
+            this->gaze_coords[i] = atoi(str.c_str());
+            i++;
+        }
+        boost::this_thread::sleep(workTime);
+    }
 }
 
 void GazeTrackerPlugin::ConnectToServer()
@@ -61,7 +105,9 @@ void GazeTrackerPlugin::ConnectToServer()
     else printf("Connection established...\n");
 }
 
-void GazeTrackerPlugin::ListenToServer()
+
+
+string GazeTrackerPlugin::ListenToServer()
 {
     this->rc = read(this->sd, &buffer[0], BufferLength);
     if(this->rc < 0)
@@ -74,8 +120,7 @@ void GazeTrackerPlugin::ListenToServer()
     {
         printf("Server program has issued a close()\n");
     }
-    printf("Client-read() is OK\n");
-    printf("Echoed data from the server: %s\n", buffer);
+    return buffer;
 }
 
 GZ_REGISTER_SYSTEM_PLUGIN(GazeTrackerPlugin)
