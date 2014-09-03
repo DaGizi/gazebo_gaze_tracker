@@ -4,6 +4,7 @@
 #include <gazebo/math/Rand.hh>
 #include <gazebo/gui/GuiIface.hh>
 #include <gazebo/rendering/rendering.hh>
+#include <gazebo/rendering/Scene.hh>
 #include <gazebo/gazebo.hh>
 
 #include <stdio.h>
@@ -21,7 +22,7 @@
 #include <boost/thread.hpp>
 
 #define BufferLength 15
-#define SERVER "192.168.100.72"
+#define SERVER "192.168.100.93"
 #define SERVPORT 5150
 
 namespace gazebo
@@ -40,13 +41,25 @@ namespace gazebo
 
     public: std::string ListenToServer();
 
-    private: void Listen();
+    private: void ListenThread();
+
+    private: void CreateSphere();
+
+    private: Ogre::SceneNode *sceneNode;
+
+    private: Ogre::SceneManager *sceneManager;
+
+    private: Ogre::Entity *ogreEntity;
 
     public: event::ConnectionPtr connection;
 
     public: rendering::UserCameraPtr mUserCam;
 
+    private: rendering::CameraPtr mCamera;
+
     public: math::Vector2i coords;
+
+    private: math::Vector3 refSpherePos;
 
     private: int gaze_coords[];
 
