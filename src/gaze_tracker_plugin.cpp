@@ -35,6 +35,7 @@ void GazeTrackerPlugin::Load(int /*_argc*/, char ** /*_argv*/)
 
 void GazeTrackerPlugin::Update()
 {
+	/// the gaze tracker works just if gazebo is in fullscreen, in windowed you are loosing pixels
 	this->coords.x = this->gaze_coords[0];
 	this->coords.y = this->gaze_coords[1];
 	this->mUserCam = gui::get_active_camera();
