@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+	<world name="empty">
+	<include>
+		<uri>model://ground_plane</uri>
+	</include>
+
+	<include>
+		<uri>model://sun</uri>
+	</include>
+
+	<include>
+		<uri>model://gaze_cylinder</uri>
+	</include>
+
+	<plugin name="cylinder_controller" filename="libcylinder_controller.so"/>
+	</world>
+</sdf>
+
