@@ -24,7 +24,7 @@
 #define BufferLength 15
 
 /// \IMPORTANT!!! Every time, check the IP address on the server PC
-#define SERVER "192.168.100.68"
+#define SERVER "192.168.100.75"
 #define SERVPORT 5150
 
 namespace gazebo

@@ -19,11 +19,19 @@ namespace gazebo
 
 	public: void SubscribeToGazeTopic();
 
-	public: void callback(const boost::shared_ptr<const gazebo::msgs::Pose> &_msg);
+	public: void SubscribetoContactTopic();
 
-	private: gazebo::transport::NodePtr node;
+	public: void gazeCallback(const boost::shared_ptr<const gazebo::msgs::Pose> &_msg);
+
+	public: void contactCallback(gazebo::msgs::ContactSensorPtr &_msg);
+
+	private: gazebo::transport::NodePtr gazeNode;
 
 	private: gazebo::transport::SubscriberPtr poseSub;
+
+	private: gazebo::transport::NodePtr contactNode;
+
+	private: gazebo::transport::SubscriberPtr contactSub;
 
 	private: physics::ModelPtr gazeCylinder;
 

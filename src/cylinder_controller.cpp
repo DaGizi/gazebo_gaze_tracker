@@ -17,19 +17,28 @@ void CylinderController::Init()
 
 void CylinderController::SubscribeToGazeTopic()
 {
-	this->node = transport::NodePtr(new transport::Node());
-	this->node->Init("empty");
-	this->poseSub = node->Subscribe("/gazebo/empty_world/gaze_cylinder_pose", &CylinderController::callback, this);
+	this->gazeNode = transport::NodePtr(new transport::Node());
+	this->gazeNode->Init("empty");
+	this->poseSub = this->gazeNode->Subscribe("/gazebo/empty_world/gaze_cylinder_pose", &CylinderController::gazeCallback, this);
 	cout << "Subscribing to topic: ~/gaze_cylinder_pose" << endl;
 }
+
+void CylinderController::SubscribetoContactTopic()
+{
+	this->contactNode = transport::NodePtr(new transport::Node());
+	this->contactNode->Init("empty");
+//	this->contactSub = this->contactNode->Subscribe("topic_name", &CylinderController::contactCallback,this);
+	cout << "Subscribing to topic :~/" << endl;
+}
+
 
 void CylinderController::OnUpdate()
 {
 	this->newPose.Set(this->cylinderPosition,this->cylinderOrientation);
-	this->gazeCylinder->SetLinkWorldPose(this->newPose, "gaze_cylinder_link");
+	this->gazeCylinder->SetWorldPose(this->newPose);
 }
 
-void CylinderController::callback(const boost::shared_ptr<const gazebo::msgs::Pose> &_msg)
+void CylinderController::gazeCallback(const boost::shared_ptr<const gazebo::msgs::Pose> &_msg)
 {
 	//this->newPose.Set(_msg->position(), _msg->orientation());
 	this->cylinderPosition.x = _msg->position().x();
@@ -43,5 +52,8 @@ void CylinderController::callback(const boost::shared_ptr<const gazebo::msgs::Po
 //	this->gazeCylinder->SetLinkWorldPose(this->newPose,"gaze_cylinder_link");
 }
 
-
+void CylinderController::contactCallback(gazebo::msgs::ContactSensorPtr &_msg)
+{
+	cout << _msg->DebugString();
+}
 GZ_REGISTER_WORLD_PLUGIN(CylinderController)
