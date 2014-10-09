@@ -24,5 +24,11 @@ make
 ~~~
 ## run
 ~~~
+On windows: 
+1.Make shure that the Tobii EyeX Controller is running properly
+2.Run MinimalFixationDataStream.c in Visual Studio
 
+On ubuntu:
+gzserver
+gzclient -g libgaze_tracker_plugin.so --verbose
 ~~~
